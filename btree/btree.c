@@ -22,7 +22,7 @@ search_in_btreenode(btree_node *btree, const void *key, node **ret);
 static int
 locate_key(btree_node *btree, const void *key, btree_node **dest_node);
 static void
-update_btree_node_parent(node *item, btree_node *dest_btnode);
+update_node_children_parent(node *item, btree_node *dest_btnode);
 static void
 insert_item_in_btnode(btree_node *dest_btnode, node *item);
 static node *
@@ -87,8 +87,10 @@ locate_key(btree_node *btree, const void *key, btree_node **dest_node) {
 }
 
 static void
-update_btree_node_parent(node *item, btree_node *dest_btnode) {
+update_node_children_parent(node *item, btree_node *dest_btnode) {
 
+		assert(dest_btnode);
+		assert(item);
 		node *item_ref = item;
 		while (item_ref) {
 			if (left(item_ref))
@@ -116,17 +118,25 @@ insert_item_in_btnode(btree_node *dest_btnode, node *item) {
 		}
 		item->next = current_item;
 
-		// After inserting update the left and right child of siblings.
-		if (prev_item) {
-				prev_item->next  = item;
+		if (prev_item == NULL && current_item) { // Insert in front.
+				dest_btnode->root = item;
+				current_item->left = item->right;
+		}
+		else if (prev_item && current_item) { // Insert between existing items.
+				prev_item->next = item;
+				prev_item->right = item->left;
+				current_item->left = item->right;
+		}
+		else if (current_item == NULL && prev_item) { // Insert at end.
+				prev_item->next = item;
 				prev_item->right = item->left;
 		}
-		if (current_item)
-				current_item->left = item->right;
+		else
+				assert("Unknown location to insert.\n");
 
 		item->parent_bt = dest_btnode;
 		dest_btnode->item_count += 1;
-		update_btree_node_parent(item, dest_btnode);
+		update_node_children_parent(item, dest_btnode);
 }
 
 /*
@@ -185,7 +195,7 @@ insert_item_in_tree(btree_node **tree, btree_node *dest_btnode, node *item) {
 		if (!dest_btnode) {
 				btree_node *bt_node = create_btreenode(item, bt_order(*tree),
 							sizeof(data(item)));
-				update_btree_node_parent(item, bt_node);
+				update_node_children_parent(item, bt_node);
 				// Make it the head of the tree.
 				*tree = bt_node;
 				return;
@@ -249,8 +259,8 @@ create_btreenode(node *item, size_t order, size_t key_size) {
 		bt_node->key_size = key_size;
 	    bt_node->compare = cmp;
 
-		// Update parent of items children.
-		update_btree_node_parent(item, bt_node);
+		if (item)
+				update_node_children_parent(item, bt_node);
 
 		return bt_node;
 }
@@ -274,23 +284,20 @@ print_btreenode(btree_node *bt_node) {
 		}
 		else {
 				int value;
-				node *node_ref = root(bt_node);
-				node *node_ref1 = node_ref;
+				node *node_ref1 = root(bt_node);
+				node *node_ref = node_ref1;
 
 				// Print all node data in btree node.
 				while (node_ref1) {
 						node_data(node_ref1, &value);
 						printf("| %d ", value);
-						node_ref1 = node_ref1->next;
+						node_ref1 = next(node_ref1);
 				}
 
 				printf("|");
-				printf(" addr:%p", bt_node);
-				printf(" Parent addr:%p", bt_node->parent);
-				printf("\n\n");
+				printf("\n");
 
 				// Now print children.
-				// node_ref = root(bt_node);
 				while (node_ref) {
 						print_node(node_ref);
 						node_ref = node_ref->next;

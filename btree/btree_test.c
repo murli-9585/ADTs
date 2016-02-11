@@ -3,15 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-btree_node *
-test_insert(int val, int order) {
+void
+test_insert(btree_node **btree, int val, int order) {
 		int i;
-		btree_node *btree = NULL;
-		btree_init(&btree, order, sizeof(int), NULL);
 		for (i=0;i<val;i++)
-				btree_insert(&btree, &i);
+				btree_insert(btree, &i);
 		printf("Inserting Items in btree, Success!\n");
-		return btree;
+		//return btree;
 }
 
 void
@@ -46,8 +44,11 @@ main(int argc, char** argv) {
 				num_inserts = strtol(argv[1], &end, 10);
 				if (argc ==3)
 						order = strtol(argv[2], &end, 10);
-				btree_node *tree = test_insert(num_inserts, order > 0 ? order : 3);
-				print_tree(tree, 1);
+
+				btree_node *btree = NULL;
+				btree_init(&btree, order, sizeof(int), NULL);
+				test_insert(&btree, num_inserts, order > 0 ? order : 3);
+				print_tree(btree, 1);
 		}
 		else
 				help();
