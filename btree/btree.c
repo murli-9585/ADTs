@@ -148,12 +148,12 @@ static node *
 split_up(btree_node *bt_node, node *item) {
 
 		unsigned int split_pos = 0;
-		node *prev = NULL;
-		node *next = NULL;
-		node *new_root = root(bt_node);
+		node *prev, *next, *new_root;
+		prev = next = new_root = NULL;
 		unsigned int original_count = item_count(bt_node);
 
 		insert_item_in_btnode(bt_node, item);
+		new_root = root(bt_node);
 		/*
 		Node was added before splitting so floor of original items by 2
 		will be split position.

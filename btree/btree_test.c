@@ -2,12 +2,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 void
 test_insert(btree_node **btree, int val, int order) {
-		int i;
-		for (i=0;i<val;i++)
-				btree_insert(btree, &i);
+		int i = 0;
+		time_t t;
+		int number;
+		srand((unsigned) time(&t));
+		while (i < val) {
+				number = rand();
+				btree_insert(btree, &number) == 0 ? i += 1 : i;
+		}
 		printf("Inserting Items in btree, Success!\n");
 		//return btree;
 }
