@@ -7,7 +7,7 @@
 
 // TODO: Change public names with Btree prefix.
 extern int btree_init(btree_node **tree, size_t order, size_t key_size,
-		int (*comparer)(const void *, const void *));
+        int (*comparer)(const void *, const void *));
 extern int btree_search(btree_node *tree, const void *key);
 extern int btree_minimum(btree_node *tree, void *value);
 extern int btree_maximum(btree_node *tree, void *value);
