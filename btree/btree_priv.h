@@ -10,17 +10,17 @@ typedef struct btree_node btree_node;
 /*
     Btree has btree_nodes which internally has Order(N) of nodes.
     Each node has 2 children which point to Btree_nodes (L/R).
-    In a Order (N) btree node there are N children, pointing to N+1
+    In a Order (N) btree node there are 2N children(keys), pointing to 2N+1
     btree_nodes.
 
-    Order(3) Btree_node.
+    Order(2) Btree_node.
     btree_node
-    ------------------------------------
-    |   ______     ______     ______   |
-    |  |node1 |   |node2 |   |node3 |  |
-    |  |______|-->|______|-->|______|  |
-    |  /      \   /      \   /      \  |
-    --/--------\-/------- \-/--------\--
+    ------------------------------------------------
+    |   ______     ______     ______     ______     |
+    |  |node1 |   |node2 |   |node3 |   |node4 |    |
+    |  |______|-->|______|-->|______|-->|______|    |
+    |  /      \   /      \   /      \   /       \   |
+    --/--------\-/------- \-/--------\-/---------\---
     btree_node btree_node....
     */
 
